@@ -8,7 +8,7 @@ pygame.init()
 
 class Catventure:
     def __init__(self):
-        self.screen = pygame.display.set_mode((800, 800))
+        self.screen = pygame.display.set_mode((800, 800), pygame.DOUBLEBUF, pygame.SRCALPHA)
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Catventure: Tribute Edition")
         self.running = True  
@@ -56,8 +56,6 @@ class Catventure:
             objects.MovingSpike(650, 150),
             objects.MovingSpike(0, 150),
             objects.SnakeX(50, 350),
-            objects.SnakeX(700, 350),
-            objects.SnakeY(400, 50)
         ]
         self.room_5 = [
             objects.Spike(150, 50),
@@ -75,6 +73,8 @@ class Catventure:
             objects.Spike(525, 550),
             objects.Spike(150, 550),
             objects.Spike(350, 100),
+        ]
+        self.room_7 = [    
         ]
         self.coin_room_1 = [
             objects.Coin(60, 520),
@@ -106,6 +106,9 @@ class Catventure:
             objects.Coin(700, 700),
             objects.Coin(375, 0)
         ]
+        self.coin_room_7 = [
+            objects.Coin(650, 350)
+        ]
         self.coin_room_list = [
             self.coin_room_1,
             self.coin_room_2,
@@ -113,6 +116,7 @@ class Catventure:
             self.coin_room_4,
             self.coin_room_5,
             self.coin_room_6,
+            self.coin_room_7,
         ]
         self.room_list = [
             self.room_1,
@@ -121,6 +125,7 @@ class Catventure:
             self.room_4,
             self.room_5,
             self.room_6,
+            self.room_7,
         ]
         self.mel_location_1 = (400, 400)
         self.mel_location_2 = (400, 400)
@@ -128,6 +133,7 @@ class Catventure:
         self.mel_location_4 = (400, 400)
         self.mel_location_5 = (400, 400)
         self.mel_location_6 = (400, 400)
+        self.mel_location_7 = (50, 350)
         self.mel_location_list = [
             self.mel_location_1,
             self.mel_location_2,
@@ -135,12 +141,14 @@ class Catventure:
             self.mel_location_4,
             self.mel_location_5,
             self.mel_location_6,
+            self.mel_location_7,
         ]
         
         self.pressing_right = False
         self.pressing_up = False
         self.pressing_down = False
         self.pressing_left = False
+        self.fade_surface = pygame.Surface((800, 800), pygame.SRCALPHA)
 
         icon = pygame.image.load("icon.png")
         pygame.display.set_icon(icon)
@@ -177,7 +185,7 @@ class Catventure:
                 self.pressing_right = True
 
     def advance_room(self):
-        self.room += 1
+        self.room += 7
         
         self.current_room = self.room_list[self.room - 1]
         self.current_mel_location_room = self.mel_location_list[self.room - 1]
@@ -189,6 +197,22 @@ class Catventure:
 
         for coin in self.current_coin_room:
             self.current_room.append(coin)
+
+        if self.room == 4:
+            self.mel.stage = 2
+            self.mel.speed = 12
+            self.mel.mov_pauses = 3
+            self.anim_speed = 16
+        if self.room == 5:
+            self.mel.stage = 3 
+            self.mel.speed = 20 
+            self.mel.mov_pauses = 5
+            self.anim_speed = 20
+        if self.room == 6:
+            self.mel.stage = 4 
+            self.mel.speed = 50 
+            self.mel.mov_pauses = 50
+            self.anim_speed = 60
 
     def update(self):
         self.event_handling()
@@ -217,6 +241,15 @@ class Catventure:
             self.button.update(pygame.mouse.get_pos(), self.screen, self.room, pygame.mouse.get_pressed(), catventure)
 
         spritemanager.update_sprite_list(self.sprites, self.offset_x, self.offset_y, 800, 800, self.screen)
+
+        if self.mel.over:
+            self.fade_surface.fill((0, 0, 0, self.mel.true_darkness))
+            self.screen.blit(self.fade_surface, (0, 0))
+            
+            if self.darkness == 3000:
+                self.mel.over = False
+                self.darkness = 0
+                self.room += 1
 
         pygame.display.update()
         self.clock.tick(60)
