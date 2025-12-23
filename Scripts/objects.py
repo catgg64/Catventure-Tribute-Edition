@@ -33,9 +33,9 @@ class MovingSpike():
     def update(self, sprites):
         self.rect.x += self.direction_x
         self.rect.y += self.direction_y
-        if self.rect.x > 800 or self.rect.x < 0:
+        if self.rect.x + 150 > 800 or self.rect.x < 0:
             self.direction_x *= -1
-        if self.rect.y > 800 or self.rect.y < 0:
+        if self.rect.y + 150 > 800 or self.rect.y < 0:
             self.direction_y *= -1 
 
         sprites.append(spritemanager.SpriteData(self.image, self.rect.x, self.rect.y, 150, 150))
@@ -62,6 +62,24 @@ class Coin():
     def reset(self):
         self.rect.x = self.init_x
         self.rect.y = self.init_y
+
+class FakeCoin():
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, 100, 100)
+        self.image = pygame.image.load("Sprites/coin.png")
+        self.image = pygame.transform.scale(self.image, (100, 100))
+        self.type = "fake coin"
+        self.init_x = x
+        self.init_y = y
+
+
+    def update(self, sprites):
+        sprites.append(spritemanager.SpriteData(self.image, self.rect.x, self.rect.y, 100, 100))
+    
+    def reset(self):
+        self.rect.x = self.init_x
+        self.rect.y = self.init_y
+
 
 class SnakeX():
     def __init__(self, x, y):
